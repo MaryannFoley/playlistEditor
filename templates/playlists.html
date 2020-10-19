@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>ListPlaylists</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/bootstrap/css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat+Alternates:400,600">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Playfair+Display">
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/fonts/font-awesome.min.css') }} ">
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/stylesplaylists.min.css') }}">
+    <script src="{{ url_for('static', filename='assets/js/jquery.min.js') }} "></script>
+    <script src="{{ url_for('static', filename='assets/bootstrap/js/bootstrap.min.js') }} "></script>
+</head>
+
+<body style="color:#1B2021">
+    <nav class="navbar navbar-light navbar-expand-md navigation-clean">
+        <div class="container"><a class="navbar-brand" href="#">Listify</a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button>
+            <div class="collapse navbar-collapse"
+                id="navcol-1">
+                <ul class="nav navbar-nav ml-auto">
+                    <li class="nav-item" role="presentation"><a class="nav-link" href="#">Welcome, {{ display_name }}!</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div>
+
+        <div class="container">
+          {% if not notif == False %}
+          <div class="alert alert-danger" role="alert">
+    {{ notif }} ahh
+    </div>
+    {% endif %}
+            <div class="row">
+                <div class="col-md-12">
+                    <div role="tablist" id="accordion-1">
+                        <div class="card">
+                            <div class="card-header" role="tab">
+                                <h5 class="mb-0"><a data-toggle="collapse" aria-expanded="false" aria-controls="accordion-1 .item-1" href="#accordion-1 .item-1">My Playlists</a></h5>
+                            </div>
+                            <div class="collapse show item-1" role="tabpanel" data-parent="#accordion-1">
+                                <div class="card-body">
+                                    <ul class="list-group overflow-auto">
+                                      {% for item in mine %}
+                                          <li class="list-group-item"><a href="{{ url_for('populate',type='playlists',id=item.id) }}">
+                                            {% if item.images|length>0 %}
+                                            <img src="{{item.images[-1]['url']}}" style="width:5%;height: auto;padding-right: 1%;">
+                                            {% else %}
+                                            {% endif %}
+
+                                            <span> {{ item.name }}</span></a></li>
+                                      {% endfor %}
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        {% if collab|length > 1 %}
+                        <div class="card">
+                            <div class="card-header" role="tab">
+                                <h5 class="mb-0"><a data-toggle="collapse" aria-expanded="true" aria-controls="accordion-1 .item-2" href="#accordion-1 .item-2">Collaborative Playlists</a></h5>
+                            </div>
+                            <div class="collapse item-2" role="tabpanel" data-parent="#accordion-1">
+                                <div class="card-body">
+                                    <ul class="list-group overflow-auto">
+                                      {% for item in collab %}
+                                          <li class="list-group-item"><span> {{ item.name }}</span></li>
+                                      {% endfor %}
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <footer>
+    <div class="text-center mx-auto"><a href="https://github.com/MaryannFoley"><i class="fa fa-github social"></i></a><a href="https://www.linkedin.com/in/maryannvfoley/"><i class="fa fa-linkedin social"></i></a><a href="https://open.spotify.com/user/maryannf100"><i class="fa fa-spotify social"></i></a><a href="https://www.last.fm/user/mafffff"><i class="fa fa-lastfm social"></i></a></div>
+</footer>
+</body>
+
+</html>
