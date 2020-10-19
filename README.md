@@ -1,4 +1,4 @@
-# New and Improved Spotify Playlist Editor
+# Spotify Playlist Editor
 Temporarily named listify, this application gives easy access to your playlists. To be deployed soon, or repo can be cloned and application can be run with the following steps.
 #### Install and run on localhost
 1. Navigate to desired directory and clone the spotifyPlaylistEditor repo
