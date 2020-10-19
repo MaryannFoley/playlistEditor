@@ -62,7 +62,7 @@
                                   </label>
                               </div>
                               {% endif %}
-                              <textarea disabled id="description" class="mb-2 h6 text-muted form-control infoinput" onchange="descMod()" style="width:70%" placeholder="{{passData.description}}" rows="2" spellcheck="true" wrap="soft"></textarea>
+                              <textarea id="description" value="{{passData.description}}" class="mb-2 h6 text-muted form-control infoinput" onchange="descMod()" style="width:70%" placeholder="{{passData.description}}" rows="2" spellcheck="true" wrap="soft"></textarea>
 
                               {% else %}
                               <picture><img class="pcover" src="{{ passData.pic }}"></picture>

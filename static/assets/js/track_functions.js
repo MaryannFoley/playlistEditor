@@ -31,9 +31,11 @@ function saveChanges(id, auth){
   if (privacyModified || nameModified || descModified){
     var public = !document.getElementById("myonoffswitch").checked;
     var name = document.getElementById("nameField").value;
+    var desc=document.getElementById("description").value;
 
     var modUrl = "https://api.spotify.com/v1/playlists/".concat(id);
-    mods=JSON.stringify({"name":name,"public":public});
+    mods=JSON.stringify({"name":name,"public":public,"description":desc});
+    console.log(mods);
     $.ajax({
       url: modUrl,
       type:"put",
