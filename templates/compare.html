@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+  <title>Compare {{passData[0].name}} & {{passData[1].name}}</title>
+  <link rel="icon" href="{{ url_for('static', filename='assets/img/logo/Logowithwords.png') }}">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat+Alternates:400,600">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Playfair+Display">
+  <link rel="stylesheet" href="{{ url_for('static', filename='assets/fonts/font-awesome.min.css') }} ">
+  <link rel="stylesheet" href="{{ url_for('static', filename='assets/fonts/ionicons.min.css') }} ">
+  <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/comparestyles.min.css') }}">
+  <script src="{{ url_for('static', filename='assets/js/jquery.min.js') }} "></script>
+  <script src="{{ url_for('static', filename='assets/js/all.js') }} "></script>
+  <script src="{{ url_for('static', filename='assets/bootstrap/js/bootstrap.min.js') }} "></script>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
+
+  <script src="{{ url_for('static', filename='assets/js/comp_functions.js') }} "></script>
+</head>
+
+<body>
+
+    <img id="loader" style="    position: absolute;
+      top: 35%;
+      left: 40%;
+      width: 20%;
+      height: auto;
+      margin:0px 0 0 0px;
+      -webkit-animation:spin 2s linear infinite;
+      -moz-animation:spin 2s linear infinite;
+      animation:spin 2s linear infinite;" src="{{ url_for('static', filename='assets/img/logo/Logowithoutwords.png') }}">
+
+    <div id="bodi" class="animate-bottom">
+  <nav class="navbar navbar-light navbar-expand-md navigation-clean">
+      <div class="container"><a class="navbar-brand" href="{{url_for('playlists')}}">Listify</a>
+          <div class="collapse navbar-collapse"
+              id="navcol-1">
+              <ul class="nav navbar-nav ml-auto">
+                  <li class="nav-item" role="presentation" style="white-space:nowrap;">Welcome, {{ display_name }}!</li>
+              </ul>
+          </div>
+      </div>
+  </nav>
+    <div>
+        <div class="container">
+            <div id="left">
+                <div class="card">
+                    <div class="card-body"><a href="{{ url_for('populate',type=passData[1].type,id=passData[1].id) }}"><i class="icon ion-close-circled"></i></a>
+                        <div>
+                          {% if editable1 %}
+                          {% if passData[0].pic %}
+                          <picture>
+                            <img class="pcover" src="{{ passData[0].pic }}"></picture>
+                          {% else %}
+                          <picture><img class="pcover" src="https://community.spotify.com/t5/image/serverpage/image-id/25294i2836BD1C1A31BDF2/image-size/original?v=mpbl-1&px=-1"></picture>
+                          {% endif %}
+                          <input id="nameField1" type="text" class="h4 infoinput" onchange="modDet(0)" value="{{ passData[0].name }}" style="width:70%" />
+
+                          <textarea id="description1" value="{{passData[0].description}}" class="mb-2 h6 text-muted form-control infoinput" onchange="modDet(0)" style="width:70%" placeholder="{{passData[0].description}}" rows="2" spellcheck="true" wrap="soft"></textarea>
+
+                          {% else %}
+                          <picture><img class="pcover" src="{{ passData[0].pic }}"></picture>
+                          <h4>{{ passData[0].name }}</h4>
+                          <h6 class="text-muted mb-2">{{passData[0].description}}</h6>
+
+                          {% endif %}
+                        </div>
+                        <div class="newlist">
+                            <ul class="list-group overflow-auto" id="leftList">
+                              {% for item in passData[0].tracks %}
+                                <li class="list-group-item" id="left{{ item.uri }}">
+                                  {% if editable1 %}
+                                  <span onclick="removeRow('{{ item.uri }}',0)" style="cursor:pointer"><i class="fa fa-minus-circle"></i></span>
+                                  {% endif %}
+                                  <span> {{ item.name }} <small>by {{ item.artists }}</small></span>
+                                  {% if editable2 %}
+                                  <span onclick="addRow('{{ item.uri }}',0,'<span> {{ item.name }} <small>by {{ item.artists }}</small></span>')" style="cursor:pointer"><i class="fa fa-plus"></i></span>
+                                  {% endif %}
+                                  </li>
+                              {% endfor %}
+                                </ul>
+                        </div>
+                        {% if editable1 %}
+                        {% if passData[0].public %}
+                        <div class="onoffswitch" style="float:left">
+                            <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="myonoffswitch1" tabindex="0" onchange="modDet(0)">
+                            <label class="onoffswitch-label" for="myonoffswitch1">
+                                <span class="onoffswitch-inner"></span>
+                                <!-- <span class="onoffswitch-switch"></span> -->
+                            </label>
+                        </div>
+                        {% else %}
+                        <div class="onoffswitch" style="float:left">
+                            <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="myonoffswitch1" tabindex="0" onchange="modDet(0)" checked>
+                            <label class="onoffswitch-label" for="myonoffswitch1">
+                                <span class="onoffswitch-inner"></span>
+                                <!-- <span class="onoffswitch-switch"></span> -->
+                            </label>
+                        </div>
+                        {% endif %}
+
+                        <button style="font-weight:bold" class="btn btn-primary save" type="button" onclick="saveChanges('{{passData[0].id}}',0,'{{passData[0].auth}}')" disabled id="saveButton1">Save</button>
+                      {% endif %}</div>
+                </div>
+            </div>
+            <div id="right">
+                <div class="card">
+                    <div class="card-body"><a href="{{ url_for('populate',type=passData[0].type,id=passData[0].id) }}"><i class="icon ion-close-circled"></i></a>
+                        <div>
+                          {% if editable2 %}
+                          {% if passData[0].pic %}
+                          <picture><img class="pcover" src="{{ passData[1].pic }}"></picture>
+                          {% else %}
+                          <picture><img class="pcover" src="https://community.spotify.com/t5/image/serverpage/image-id/25294i2836BD1C1A31BDF2/image-size/original?v=mpbl-1&px=-1"></picture>
+                          {% endif %}
+                          <input id="nameField2" type="text" class="h4 infoinput" onchange="modDet(1)" value="{{ passData[1].name }}" style="width:70%" />
+
+                          <textarea id="description2" value="{{passData[1].description}}" class="mb-2 h6 text-muted form-control infoinput" onchange="modDet(1)" style="width:70%" placeholder="{{passData[1].description}}" rows="2" spellcheck="true" wrap="soft"></textarea>
+
+                          {% else %}
+                          <picture><img class="pcover" src="{{ passData[1].pic }}"></picture>
+                          <h4>{{ passData[1].name }}</h4>
+                          <h6 class="text-muted mb-2">{{passData[1].description}}</h6>
+
+                          {% endif %}
+                        </div>
+                        <div class="newlist">
+                            <ul class="list-group overflow-auto" id="rightList">
+                              {% for item in passData[1].tracks %}
+                                <li class="list-group-item" id="right{{ item.uri }}">
+                                  {% if editable2 %}<span onclick="removeRow('{{ item.uri }}',1)" style="cursor:pointer">
+                                    <i class="fa fa-minus-circle"></i></span>{% endif %}
+                                    <span> {{ item.name }} <small>by {{ item.artists }}</small></span>
+                                    {% if editable1 %}
+                                    <span onclick="addRow('{{ item.uri }}',1,'<span> {{ item.name }} <small>by {{ item.artists }}</small></span>')" style="cursor:pointer"><i class="fa fa-plus"></i></span>
+                                    {% endif %}
+                                  </li>
+
+                              {% endfor %}
+                                  </ul>
+                        </div>
+
+                        {% if editable2 %}
+                        {% if passData[1].public %}
+                        <div class="onoffswitch" style="float:left">
+                            <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="myonoffswitch2" tabindex="0" onchange="modDet(1)">
+                            <label class="onoffswitch-label" for="myonoffswitch2">
+                                <span class="onoffswitch-inner"></span>
+                                <!-- <span class="onoffswitch-switch"></span> -->
+                            </label>
+                        </div>
+                        {% else %}
+                        <div class="onoffswitch" style="float:left">
+                            <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="myonoffswitch2" tabindex="0" onchange="modDet(1)" checked>
+                            <label class="onoffswitch-label" for="myonoffswitch2">
+                                <span class="onoffswitch-inner"></span>
+                                <!-- <span class="onoffswitch-switch"></span> -->
+                            </label>
+                        </div>
+                        {% endif %}
+
+
+                        <button style="font-weight:bold" class="btn btn-primary save" type="button" onclick="saveChanges('{{passData[1].id}}',1,'{{passData[1].auth}}')" disabled id="saveButton2">Save</button>{% endif %}
+                      </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+  </div>
+    <script src="assets/js/jquery.min.js"></script>
+    <script src="assets/bootstrap/js/bootstrap.min.js"></script>
+</body>
+
+</html>

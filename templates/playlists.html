@@ -4,7 +4,8 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>ListPlaylists</title>
+    <title>Playlists</title>
+    <link rel="icon" href="{{ url_for('static', filename='assets/img/logo/Logowithwords.png') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='assets/bootstrap/css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat+Alternates:400,600">
@@ -12,20 +13,33 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='assets/fonts/font-awesome.min.css') }} ">
     <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/stylesplaylists.min.css') }}">
     <script src="{{ url_for('static', filename='assets/js/jquery.min.js') }} "></script>
+    <script src="{{ url_for('static', filename='assets/js/all.js') }} "></script>
     <script src="{{ url_for('static', filename='assets/bootstrap/js/bootstrap.min.js') }} "></script>
 </head>
 
 <body style="color:#1B2021">
-    <nav class="navbar navbar-light navbar-expand-md navigation-clean">
-        <div class="container"><a class="navbar-brand" href="#">Listify</a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button>
-            <div class="collapse navbar-collapse"
-                id="navcol-1">
-                <ul class="nav navbar-nav ml-auto">
-                    <li class="nav-item" role="presentation"><a class="nav-link" href="#">Welcome, {{ display_name }}!</a></li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+
+  <img id="loader" style="    position: absolute;
+    top: 35%;
+    left: 40%;
+    width: 20%;
+    height: auto;
+    margin:0px 0 0 0px;
+    -webkit-animation:spin 2s linear infinite;
+    -moz-animation:spin 2s linear infinite;
+    animation:spin 2s linear infinite;" src="{{ url_for('static', filename='assets/img/logo/Logowithoutwords.png') }}">
+
+  <div id="bodi" class="animate-bottom">
+  <nav class="navbar navbar-light navbar-expand-md navigation-clean">
+      <div class="container"><a class="navbar-brand" href="{{url_for('playlists')}}">Listify</a>
+          <div class="collapse navbar-collapse"
+              id="navcol-1">
+              <ul class="nav navbar-nav ml-auto">
+                  <li class="nav-item" role="presentation" style="white-space:nowrap;">Welcome, {{ display_name }}!</li>
+              </ul>
+          </div>
+      </div>
+  </nav>
     <div>
 
         <div class="container">
@@ -80,9 +94,12 @@
 
         </div>
     </div>
+
     <footer>
     <div class="text-center mx-auto"><a href="https://github.com/MaryannFoley"><i class="fa fa-github social"></i></a><a href="https://www.linkedin.com/in/maryannvfoley/"><i class="fa fa-linkedin social"></i></a><a href="https://open.spotify.com/user/maryannf100"><i class="fa fa-spotify social"></i></a><a href="https://www.last.fm/user/mafffff"><i class="fa fa-lastfm social"></i></a></div>
 </footer>
+</div>
+
 </body>
 
 </html>

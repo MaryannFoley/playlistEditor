@@ -56,6 +56,8 @@ auth_query_parameters = {
 
 @app.route("/")
 def home():
+    if "user" in session.keys():
+        return redirect(url_for("playlists"))
     return render_template('index.html', url=CLIENT_SIDE_URL + url_for("authorize"))
 
 @app.route("/auth")
@@ -86,13 +88,13 @@ def callback():
 
         # Auth Step 6: Use the access token to access Spotify API
         session["authorization_header"] = {"Authorization": "Bearer {}".format(access_token)}
-        print(access_token)
+        #print(access_token)
 
         search = "{}/me".format(SPOTIFY_API_URL)
         profile_response = requests.get(search, headers=session["authorization_header"])
         profile_data = json.loads(profile_response.text)
         session["user"]=profile_data
-        print(profile_data["display_name"])
+        #print(profile_data["display_name"])
         return redirect(url_for("playlists"))
     return redirect(url_for("home"))
 
@@ -122,7 +124,7 @@ def playlists():
                 if playlist["owner"]["id"]==session["user"]["id"]:
                     mine.append(playlist)
                 elif playlist["collaborative"]:
-                    print(playlist["name"])
+                    #print(playlist["name"])
                     collab.append(playlist)
 
 
@@ -137,7 +139,7 @@ def updateSession():
     if "error" in  profile_data.keys():
         refresh = "{}?grant_type=refresh_token&refresh_token={}".format(SPOTIFY_TOKEN_URL,session["refresh_token"])
         profile_response = requests.get(refresh, headers=session["authorization_header"])
-        print(profile_response)
+        #print(profile_response)
         if profile_response:
             token = json.loads(profile_response.text)["access_token"]
             session["authorization_header"] = {"Authorization": "Bearer {}".format(token)}
@@ -154,7 +156,7 @@ def populate():
     type=request.args.get("type")
     id=request.args.get("id")
     updateSession()
-    print(type,id)
+    #print(type,id)
     if type and id:
         if type=="albums" or type=="playlists":
             search = "{}/{}/{}".format(SPOTIFY_API_URL,type,id)
@@ -171,9 +173,10 @@ def populate():
                 passData={
                     "name":search_data["name"],
                     "id":search_data["id"],
-                    "public":search_data["public"],
-                    "description":search_data["description"],
+                    "public":search_data["public"] if type == "playlists" else True,
+                    "description":search_data["description"].split("Cover: <a")[0] if type=="playlists" else ("By "+" & ".join([artist["name"] for artist in search_data["artists"]])),
                     "pic":search_data["images"][0]["url"] if len(search_data["images"]) else [],
+
                     "tracks":[],
                     "type":type,
                     "auth":session["authorization_header"]["Authorization"]
@@ -188,25 +191,32 @@ def populate():
                         search=None
 
                     for track in search_data["tracks"]["items"]:
-                        print(track["track"]["artists"])
-                        passData["tracks"].append({"name":track["track"]["name"],"uri":track["track"]["uri"], "artists":" & ".join([artist["name"] for artist in track["track"]["artists"]])})
+                        #print(track["track"]["artists"])
+                        if type=="playlists":
+                            passData["tracks"].append({"name":track["track"]["name"],"uri":track["track"]["uri"], "artists":" & ".join([artist["name"] for artist in track["track"]["artists"]])})
+                        else:
+                            passData["tracks"].append({"name":track["name"],"uri":track["uri"], "artists":" & ".join([artist["name"] for artist in track["artists"]])})
                 return render_template('single.html', display_name=session["user"]["display_name"], editable=editable, passData=passData)
     return redirect(url_for("playlists", notif="Playlist not found "))
 
 @app.route("/add")
 def new():
     if "type" in request.args.keys():
+
         if request.args["type"]=="scratch":
             pass
         elif request.args["type"]=="duplicate":
+            #print(request.args.get("playlist"))
             type=request.args.get("playlist") #True is playlist, false is album
+
             id=request.args.get("id")
             updateSession()
             #print(type,id)
             if type and id:
-                if type:
+                #print(type)
+                if type=="playlists":
                     search = "{}/playlists/{}".format(SPOTIFY_API_URL,id)
-                else:
+                elif type=="albums":
                     search = "{}/albums/{}".format(SPOTIFY_API_URL,id)
                 search_response = requests.get(search, headers=session["authorization_header"])
                 search_data = json.loads(search_response.text)
@@ -222,7 +232,7 @@ def new():
 
                 while search:
                     add_songs="{}/playlists/{}/tracks".format(SPOTIFY_API_URL,new_data["id"])
-                    tracks=[uri["track"]["uri"] for uri in search_data["tracks"]["items"]]
+                    tracks=[(uri["track"]["uri"] if type=="playlists" else uri["uri"] ) for uri in search_data["tracks"]["items"]]
                     add_response = requests.post(add_songs, headers=session["authorization_header"], json={"uris":tracks})
                     add_data = json.loads(add_response.text)
 
@@ -236,6 +246,95 @@ def new():
 
     return(redirect(url_for("playlists")))
 
+
+@app.route("/compare")
+def compare():
+    #type should be albums or playlists
+    type1=request.args.get("type1")
+    id1=request.args.get("id1")
+    type2=request.args.get("type2")
+    id2=request.args.get("id2")
+    updateSession()
+    if type1 and id1 and type2 and id2 :
+        if (type1=="albums" or type1=="playlists") and (type2=="albums" or type2=="playlists"):
+            search1 = "{}/{}/{}".format(SPOTIFY_API_URL,type1,id1)
+            search2 = "{}/{}/{}".format(SPOTIFY_API_URL,type2,id2)
+            search_response1 = requests.get(search1, headers=session["authorization_header"])
+            search_data1 = json.loads(search_response1.text)
+            search_response2 = requests.get(search2, headers=session["authorization_header"])
+            search_data2 = json.loads(search_response2.text)
+            #print(search1)
+            #print(search_data1)
+            #print(search2)
+            #print(search_data2)
+            if "error" not in search_data1.keys() and "error" not in search_data2.keys():
+                if type1 == "albums" or (search_data1["collaborative"] == False and search_data1["owner"]["id"] != session["user"]["id"]) :
+                    editable1=False
+                else:
+                    editable1=True
+
+                passData1={
+                    "name":search_data1["name"],
+                    "id":search_data1["id"],
+                    "public":search_data1["public"] if type1 == "playlists" else True,
+                    "description":search_data1["description"].split("Cover: <a")[0] if type1=="playlists" else ("By "+" & ".join([artist["name"] for artist in search_data1["artists"]])),
+                    "pic":search_data1["images"][0]["url"] if len(search_data1["images"]) else [],
+                    "tracks":[],
+                    "type":type1,
+                    "auth":session["authorization_header"]["Authorization"]
+                }
+
+
+                while search1:
+                    if "next" in search_data1.keys() and search_data1["next"]:
+                        search_response1 = requests.get(search1, headers=session["authorization_header"])
+                        search_data1 = json.loads(search_response1.text)
+                    else:
+                        search1=None
+
+                    for track in search_data1["tracks"]["items"]:
+                        #print(track["track"]["artists"])
+                        if type1=="playlists":
+                            passData1["tracks"].append({"name":track["track"]["name"],"uri":track["track"]["uri"], "artists":" & ".join([artist["name"] for artist in track["track"]["artists"]])})
+                        else:
+                            passData1["tracks"].append({"name":track["name"],"uri":track["uri"], "artists":" & ".join([artist["name"] for artist in track["artists"]])})
+
+                if type2 == "albums" or (search_data2["collaborative"] == False and search_data2["owner"]["id"] != session["user"]["id"]) :
+                    editable2=False
+                else:
+                    editable2=True
+
+                passData2={
+                    "name":search_data2["name"],
+                    "id":search_data2["id"],
+                    "public":search_data2["public"] if type2 == "playlists" else True,
+                    "description":search_data2["description"].split("Cover: <a")[0] if type2=="playlists" else ("By "+" & ".join([artist["name"] for artist in search_data2["artists"]])),
+                    "pic":search_data2["images"][0]["url"] if len(search_data2["images"]) else [],
+                    "tracks":[],
+                    "type":type2,
+                    "auth":session["authorization_header"]["Authorization"]
+                }
+
+
+                while search2:
+                    if "next" in search_data2.keys() and search_data2["next"]:
+                        search_response2 = requests.get(search2, headers=session["authorization_header"])
+                        search_data2 = json.loads(search_response2.text)
+                    else:
+                        search2=None
+
+                    for track in search_data2["tracks"]["items"]:
+                        #print(track["track"]["artists"])
+                        if type2=="playlists":
+                            passData2["tracks"].append({"name":track["track"]["name"],"uri":track["track"]["uri"], "artists":" & ".join([artist["name"] for artist in track["track"]["artists"]])})
+                        else:
+                            passData2["tracks"].append({"name":track["name"],"uri":track["uri"], "artists":" & ".join([artist["name"] for artist in track["artists"]])})
+
+                passData=[passData1,passData2]
+                #print(passData)
+
+                return render_template('compare.html', display_name=session["user"]["display_name"], editable1=editable1, editable2=editable2, passData=passData)
+    return redirect(url_for("playlists", notif="Playlist not found "))
 
 def params_to_list(arg):
     ret = []
