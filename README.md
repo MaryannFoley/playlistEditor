@@ -8,6 +8,6 @@ Temporarily named listify, this application gives easy access to your playlists.
 6. Install requirements by runnning `$ python -m pip install -r requirements.txt`
 7. Run the app by running `$ python3 __init__.py`
 ### Current features
-Currently, edits work for playlist name, public status, and the removal of items. Additionally, playlists can be duplicated.
+Currently, edits work for playlist name, public status, description, and the removal of items. Additionally, playlists can be duplicated.
 ### Soon to be added features
-For single playlists, description and image editing. Comparison of playlists to others or albums. Souped up UI.
+For single playlists, image editing. Comparison of playlists to others or albums. Souped up UI.
