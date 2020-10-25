@@ -14,19 +14,38 @@ function removeRow(id,side){
   //console.log(remove);
 }
 
+function removeNew(id,side){
+  const index = add[side]["uris"].indexOf(id);
+  console.log(index);
+  if (index > -1) {
+    add[side]["uris"].splice(index, 1);
+
+    if (side==0){
+      document.getElementById("left".concat(id)).remove();
+    }
+    else {
+      document.getElementById("right".concat(id)).remove();
+    }
+  }
+
+}
+
 function addRow(id,side,content){
   add[Math.abs(side-1)].uris.push(id);
   if (side==0){
     var newItem=document.createElement("li");
-    newItem.innerHTML=content;
+    newItem.innerHTML="<span onclick='removeNew(&#34;".concat(id,"&#34;,1)' style='cursor:pointer'><i class='fa fa-minus-circle'></i></span>", content);
     newItem.setAttribute("class","list-group-item" );
+    newItem.setAttribute("id","right".concat(id));
     var list = document.getElementById("rightList");
     list.insertBefore(newItem, list.childNodes[0]);
   }
   else {
     var newItem=document.createElement("li");
     newItem.setAttribute("class","list-group-item" );
-    newItem.innerHTML=content;
+    newItem.innerHTML="<span onclick='removeNew(&#34;".concat(id,"&#34;,0)' style='cursor:pointer'><i class='fa fa-minus-circle'></i></span>", content);
+    newItem.setAttribute("id","left".concat(id));
+
     var list = document.getElementById("leftList");
     list.insertBefore(newItem, list.childNodes[0]);
   }

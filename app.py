@@ -57,7 +57,8 @@ auth_query_parameters = {
 @app.route("/")
 def home():
     if "user" in session.keys():
-        return redirect(url_for("playlists"))
+        if updateSession():
+            return redirect(url_for("playlists"))
     return render_template('index.html', url=CLIENT_SIDE_URL + url_for("authorize"))
 
 @app.route("/auth")
@@ -246,6 +247,10 @@ def new():
 
     return(redirect(url_for("playlists")))
 
+@app.errorhandler(404)
+def not_found(e):
+
+  return redirect(url_for("playlists"))
 
 @app.route("/compare")
 def compare():
@@ -344,5 +349,5 @@ def params_to_list(arg):
     return ret
 
 if __name__ == "__main__":
-    app.debug = True
+    app.debug = False
     app.run()
