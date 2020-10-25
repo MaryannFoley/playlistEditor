@@ -10,4 +10,4 @@ Temporarily named listify, this application gives easy access to your playlists.
 ### Current features
 Currently, edits work for playlist name, public status, description, and the removal of items. Additionally, playlists and albums can be duplicated. Comparison of playlists to others or albums. 
 ### Soon to be added features
-Image editing. Souped up UI.
+Image editing. Log out. Souped up UI.
